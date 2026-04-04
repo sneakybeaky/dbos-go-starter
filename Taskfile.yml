@@ -24,3 +24,8 @@ tasks:
     desc: Run the application
     cmds:
       - go run main.go
+
+  workflow:*:
+    desc: Workflow tasks - one of cancel, fork, get, list, resume, steps
+    cmds:
+      - go tool dbos workflow '{{index .MATCH 0}}'
