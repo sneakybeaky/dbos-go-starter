@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/dbos-inc/dbos-transact-golang/dbos"
-	"github.com/gin-gonic/gin"
 )
 
 const STEPS_EVENT = "steps_event"
@@ -72,6 +72,16 @@ func stepThree(ctx context.Context) (string, error) {
 }
 
 /*****************************/
+/**** Helper Functions *******/
+/*****************************/
+
+func writeJSON(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(v)
+}
+
+/*****************************/
 /**** Main Function **********/
 /*****************************/
 
@@ -80,7 +90,7 @@ func main() {
 	var err error
 	dbosCtx, err = dbos.NewDBOSContext(context.Background(), dbos.Config{
 		DatabaseURL: os.Getenv("DBOS_SYSTEM_DATABASE_URL"),
-		AppName: "dbos-go-starter",
+		AppName:     "dbos-go-starter",
 		AdminServer: true,
 	})
 	if err != nil {
@@ -97,17 +107,19 @@ func main() {
 	}
 	defer dbosCtx.Shutdown(10 * time.Second)
 
-	// Initialize Gin router
-	router := gin.Default()
+	// Initialize standard HTTP mux
+	mux := http.NewServeMux()
 
 	// HTTP Handlers
-	router.StaticFile("/", "./html/app.html")
-	router.GET("/workflow/:taskid", workflowHandler)
-	router.GET("/last_step/:taskid", lastStepHandler)
-	router.POST("/crash", crashHandler)
+	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./html/app.html")
+	})
+	mux.HandleFunc("GET /workflow/{taskid}", workflowHandler)
+	mux.HandleFunc("GET /last_step/{taskid}", lastStepHandler)
+	mux.HandleFunc("POST /crash", crashHandler)
 
 	fmt.Println("Server starting on http://localhost:8080")
-	err = router.Run(":8080")
+	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
 		fmt.Printf("Error starting server: %s\n", err)
 	}
@@ -117,39 +129,39 @@ func main() {
 /**** HTTP HANDLERS **********/
 /*****************************/
 
-func workflowHandler(c *gin.Context) {
-	taskID := c.Param("taskid")
+func workflowHandler(w http.ResponseWriter, r *http.Request) {
+	taskID := r.PathValue("taskid")
 
 	if taskID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Task ID is required"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Task ID is required"})
 		return
 	}
 
 	_, err := dbos.RunWorkflow(dbosCtx, ExampleWorkflow, "", dbos.WithWorkflowID(taskID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 }
 
-func lastStepHandler(c *gin.Context) {
-	taskID := c.Param("taskid")
+func lastStepHandler(w http.ResponseWriter, r *http.Request) {
+	taskID := r.PathValue("taskid")
 
 	if taskID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Task ID is required"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Task ID is required"})
 		return
 	}
 
 	step, err := dbos.GetEvent[int](dbosCtx, taskID, STEPS_EVENT, 0)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
-	c.String(http.StatusOK, fmt.Sprintf("%d", step))
+	fmt.Fprintf(w, "%d", step)
 }
 
 // This endpoint crashes the application. For demonstration purposes only :)
-func crashHandler(c *gin.Context) {
+func crashHandler(w http.ResponseWriter, r *http.Request) {
 	os.Exit(1)
 }
