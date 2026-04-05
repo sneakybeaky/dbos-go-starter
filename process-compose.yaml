@@ -1,10 +1,14 @@
 version: "0.5"
 
-log_location: log.txt
-
 processes:
   dbos-go-starter:
-    log_location: "logs/log.txt"
+    log_location: "logs/log_file.{PC_REPLICA_NUM}.log"
     command: >
       go run main.go -port 808$${PC_REPLICA_NUM} -executor-id $${PC_PROC_NAME}$${PC_REPLICA_NUM}
     replicas: 2
+    log_configuration:
+      disable_json: true # output as plain text. The default is false
+      no_metadata: false # log process name and replica number
+      add_timestamp: true # add timestamp to the logger. Default is false
+      no_color: true # disable ANSII colors in the logger. Default is false
+      flush_each_line: true # disable buffering and flush each line to the log file. Default is false
