@@ -3,7 +3,8 @@
   "packages": [
     "go@latest",
     "go-task@latest",
-    "haproxy@latest"
+    "haproxy@latest",
+    "postgresql@latest"
   ],
   "shell": {
     "init_hook": [

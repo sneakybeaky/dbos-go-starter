@@ -6,6 +6,9 @@ processes:
     command: >
       go run main.go -port 809$${PC_REPLICA_NUM} -executor-id $${PC_PROC_NAME}$${PC_REPLICA_NUM}
     replicas: 2
+    depends_on:
+      postgresql:
+        condition: process_started
     log_configuration:
       disable_json: true # output as plain text. The default is false
       no_metadata: false # log process name and replica number

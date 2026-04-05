@@ -15,11 +15,6 @@ tasks:
       - task -l
     silent: true
 
-  db:*:
-    desc: Database tasks - one of start, stop
-    cmds:
-      - go tool dbos postgres '{{index .MATCH 0}}'
-
   run:
     desc: Run the application interactively
     cmds:
@@ -29,3 +24,10 @@ tasks:
     desc: Workflow tasks - one of cancel, fork, get, list, resume, steps
     cmds:
       - go tool dbos workflow '{{index .MATCH 0}}' '{{.CLI_ARGS}}'
+
+  dbinit:
+    desc: Initialize the database
+    cmds:
+      - initdb
+      - devbox services start postgresql
+      - createdb dbos_toolbox_go
