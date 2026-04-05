@@ -21,9 +21,9 @@ tasks:
       - go tool dbos postgres '{{index .MATCH 0}}'
 
   run:
-    desc: Run the application
+    desc: Run the application interactively
     cmds:
-      - go run main.go
+      - devbox services up
 
   workflow:*:
     desc: Workflow tasks - one of cancel, fork, get, list, resume, steps
