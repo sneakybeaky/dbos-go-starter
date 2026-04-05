@@ -88,6 +88,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 
 func main() {
 	port := flag.String("port", "8080", "HTTP listen port")
+	executorID := flag.String("executor-id", "local", "DBOS executor ID (optional, overridden by DBOS__VMID env var)")
 	flag.Parse()
 
 	// Create DBOS context
@@ -95,7 +96,8 @@ func main() {
 	dbosCtx, err = dbos.NewDBOSContext(context.Background(), dbos.Config{
 		DatabaseURL: os.Getenv("DBOS_SYSTEM_DATABASE_URL"),
 		AppName:     "dbos-go-starter",
-		AdminServer: true,
+		AdminServer: false,
+		ExecutorID:  *executorID,
 	})
 	if err != nil {
 		panic(err)

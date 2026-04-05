@@ -1,0 +1,10 @@
+version: "0.5"
+
+log_location: log.txt
+
+processes:
+  dbos-go-starter:
+    log_location: "logs/log.txt"
+    command: >
+      go run main.go -port 808$${PC_REPLICA_NUM} -executor-id $${PC_PROC_NAME}$${PC_REPLICA_NUM}
+    replicas: 2

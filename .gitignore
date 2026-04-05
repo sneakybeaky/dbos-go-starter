@@ -1,2 +1,4 @@
 dbos
 .idea
+*log.txt
+logs/
