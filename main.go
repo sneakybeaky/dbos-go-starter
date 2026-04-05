@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -86,6 +87,9 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 /*****************************/
 
 func main() {
+	port := flag.String("port", "8080", "HTTP listen port")
+	flag.Parse()
+
 	// Create DBOS context
 	var err error
 	dbosCtx, err = dbos.NewDBOSContext(context.Background(), dbos.Config{
@@ -118,8 +122,9 @@ func main() {
 	mux.HandleFunc("GET /last_step/{taskid}", lastStepHandler)
 	mux.HandleFunc("POST /crash", crashHandler)
 
-	fmt.Println("Server starting on http://localhost:8080")
-	err = http.ListenAndServe(":8080", mux)
+	addr := ":" + *port
+	fmt.Printf("Server starting on http://localhost:%s\n", *port)
+	err = http.ListenAndServe(addr, mux)
 	if err != nil {
 		fmt.Printf("Error starting server: %s\n", err)
 	}
