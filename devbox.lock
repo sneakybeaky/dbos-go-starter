@@ -100,6 +100,54 @@
           "store_path": "/nix/store/ckcq2mj8zk0drhaaacy6mp9d924hnr4m-go-1.26.1"
         }
       }
+    },
+    "haproxy@latest": {
+      "last_modified": "2026-03-21T07:29:51Z",
+      "resolved": "github:NixOS/nixpkgs/09061f748ee21f68a089cd5d91ec1859cd93d0be#haproxy",
+      "source": "devbox-search",
+      "version": "3.3.6",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/rklx4l6qn8kazq7i54x900adibxqlcpb-haproxy-3.3.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/rklx4l6qn8kazq7i54x900adibxqlcpb-haproxy-3.3.6"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/sbqn0rs8znps3bs5pha8pk28nnylnq32-haproxy-3.3.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/sbqn0rs8znps3bs5pha8pk28nnylnq32-haproxy-3.3.6"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/k3fbph3cwg8726v3ckvdk9fyj5da7rk4-haproxy-3.3.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/k3fbph3cwg8726v3ckvdk9fyj5da7rk4-haproxy-3.3.6"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/83zzkingfw968xrablhrc237gkq5k7c5-haproxy-3.3.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/83zzkingfw968xrablhrc237gkq5k7c5-haproxy-3.3.6"
+        }
+      }
     }
   }
 }
