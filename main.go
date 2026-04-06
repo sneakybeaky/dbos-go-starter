@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -31,9 +33,17 @@ func ExampleWorkflow(ctx dbos.DBOSContext, _ string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	_, err = dbos.RunAsStep(ctx, func(stepCtx context.Context) (string, error) {
-		return stepTwo(stepCtx)
-	})
+
+	// Critical step - retry & back off
+	_, err = dbos.RunAsStep(ctx,
+		func(stepCtx context.Context) (string, error) {
+			return stepTwo(stepCtx)
+		},
+		dbos.WithStepMaxRetries(3),
+		dbos.WithBackoffFactor(2.0),
+		dbos.WithBaseInterval(time.Second),
+		dbos.WithStepName("critical"))
+
 	if err != nil {
 		return "", err
 	}
@@ -62,6 +72,11 @@ func stepOne(ctx context.Context) (string, error) {
 
 func stepTwo(ctx context.Context) (string, error) {
 	time.Sleep(5 * time.Second)
+
+	if r := rand.Intn(4); r > 0 {
+		fmt.Println("Step two failed!")
+		return "", errors.New("random failure")
+	}
 	fmt.Println("Step two completed!")
 	return "Step 2 completed", nil
 }

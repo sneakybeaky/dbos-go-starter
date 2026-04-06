@@ -8,7 +8,7 @@ processes:
     replicas: 2
     depends_on:
       postgresql:
-        condition: process_started
+        condition: process_healthy
     log_configuration:
       disable_json: true # output as plain text. The default is false
       no_metadata: false # log process name and replica number
